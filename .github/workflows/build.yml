@@ -1,0 +1,46 @@
+# Nome do Workflow
+name: Build PowerShell EXE
+
+# Gatilho (trigger)
+# Este workflow será executado em cada push para a branch 'main'.
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    # O trabalho será executado em uma máquina virtual Windows fornecida pelo GitHub.
+    runs-on: windows-latest
+
+    steps:
+      # 1. Checkout do código
+      # Baixa o código do seu repositório para a máquina virtual.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Compilar o script .ps1 para .exe
+      # Este passo usa PowerShell para instalar o módulo PS2EXE e depois compilar o script.
+      - name: Compile script to EXE
+        shell: pwsh
+        run: |
+          # Instala o módulo PS2EXE da Galeria PowerShell.
+          Install-Module -Name PS2EXE -Force
+          
+          # Executa o compilador.
+          # -inputFile: O nosso script de origem.
+          # -outputFile: O nome do executável de saída.
+          ps2exe -inputFile .\manage_printers.ps1 -outputFile .\printer-manager.exe
+          
+          Write-Host "EXE compilado com sucesso!"
+
+      # 3. Upload do Artefato
+      # Pega o arquivo .exe gerado e o salva como um artefato do workflow.
+      # Você poderá baixar este arquivo da página de resultados da Action no GitHub.
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Nome do artefato que aparecerá no GitHub.
+          name: printer-manager-exe
+          # Caminho para o arquivo que será enviado.
+          path: .\printer-manager.exe
