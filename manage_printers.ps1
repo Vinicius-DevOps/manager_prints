@@ -14,7 +14,7 @@ Write-Host
 Write-Host "Procurando impressoras instaladas..."
 try {
     # Obtém todas as impressoras disponíveis no sistema.
-    $printers = Get-Printer | Sort-Object Name
+    $printers = Get-Printer | Select-Object -ExpandProperty Name
 } catch {
     Write-Host -ForegroundColor Red "Erro ao buscar impressoras: $_"
     Write-Host "Pressione Enter para sair."
